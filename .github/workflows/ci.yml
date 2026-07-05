@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -20,7 +22,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r tempconverter/requirements.txt pytest requests
+        run: pip install flask flask-sqlalchemy pymysql cryptography flask-wtf pytest requests
 
       - name: Run unit tests
         run: python -m pytest tempconverter/tests/test_unit.py -v
