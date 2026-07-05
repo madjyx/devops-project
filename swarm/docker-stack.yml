@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tempconverter
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - appnet
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  app:
+    image: docker.io/madjyx/tempconverter:latest
+    environment:
+      DB_USER: appuser
+      DB_PASS: apppassword
+      DB_HOST: db
+      DB_NAME: tempconverter
+      STUDENT: "Zvonimir Madarac"
+      COLLEGE: "Algebra Bernays University"
+    ports:
+      - "8080:5000"
+    networks:
+      - appnet
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 15
+
+volumes:
+  db_data:
+
+networks:
+  appnet:
+    driver: overlay
